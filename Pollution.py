@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import copy
+from itertools import chain
 
 class Pollution:
 
@@ -31,9 +32,32 @@ class Pollution:
         return self
 
 
+    def AdjustValueRange(self, pollution_max):
+        #before_maxが0なら例外を投げる
+        before_max = max(chain(*(chain(*self.__pollutionPoints))))
+        
+        ratio = before_max / pollution_max
 
 
-    def to_list(self):
+        xlim, ylim, zlim = self.__pollutionPoints.shape
+        result = copy.deepcopy(self.__pollutionPoints)
+
+        for x_i in range(xlim):
+            for y_i in range(ylim):
+                for z_i in range(zlim):
+
+                    result[x_i][y_i][z_i] = self.__pollutionPoints[x_i][y_i][z_i] / ratio
+
+        return Pollution(result)
+
+
+
+
+
+
+
+    def View(self, display_pollution_range, cmap = 'binaly'):
+
 
         pollutions_converted_to_array = np.array(self.__pollutionPoints)
         x_element_count, y_element_count, z_element_count = pollutions_converted_to_array.shape
@@ -51,7 +75,12 @@ class Pollution:
                         new_z.append(z_count)
                         new_pollutions.append(self.__pollutionPoints[x_count][y_count][z_count])
 
-        return new_x, new_y, new_z, new_pollutions
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection = '3d')
+        ax.scatter(xList, yList, zList, c = pollutionList, cmap = 'binary', alpha = 0.3)
+
+
+        return None
 
 
     def Save(self, savePath, format):
