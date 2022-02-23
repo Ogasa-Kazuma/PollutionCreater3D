@@ -8,6 +8,8 @@ import math
 
 class Pollution:
 
+
+
     def __init__(self, pollutionPoints):
         self.__pollutionPoints = pollutionPoints
 
@@ -15,10 +17,6 @@ class Pollution:
     def GetPollution(self, x, y, z):
         return self.__pollutionPoints[x][y][z]
 
-    def IsInRange(self, x, y, z):
-        xlim, ylim, zlim = self.__XYZ_Limits()
-        isInRange = (x >= 0 and x < xlim and y >= 0 and y < ylim and z >= 0 and z < zlim)
-        return isInRange
 
     def Add(self, pollution):
 
@@ -26,11 +24,7 @@ class Pollution:
         for x_i in range(xlim):
             for y_i in range(ylim):
                 for z_i in range(zlim):
-                    if(pollution.IsInRange(x_i, y_i, z_i)):
-                        self.__pollutionPoints[x_i][y_i][z_i] += pollution.GetPollution(x_i, y_i, z_i)
-
-
-        return self
+                    self.__AddOnePointPollution(x_i, y_i, z_i, pollution)
 
 
     def AdjustValueRange(self, pollution_max):
@@ -41,6 +35,7 @@ class Pollution:
 
 
         xlim, ylim, zlim = self.__XYZ_Limits()
+        #deepコピーしないとエラーの原因
         result = copy.deepcopy(self.__pollutionPoints)
 
         for x_i in range(xlim):
@@ -53,43 +48,16 @@ class Pollution:
 
 
 
-    def View(self, display_pollution_range, cmap = 'binaly'):
+    def View(self, display_pollution_range, cmap = 'binary', alpha = 0.3):
 
 
         xList, yList, zList, pollutionList = self.__DeletePollutionPointNotInViewRange(display_pollution_range)
         #matplotlibという描画ライブラリで散布図を描画
         ax = plt.figure().add_subplot(111, projection = '3d')
-        ax.scatter(xList, yList, zList, c = pollutionList, cmap = 'binary', alpha = 0.3)
+        ax.scatter(xList, yList, zList, c = pollutionList, cmap = cmap, alpha = 0.3)
 
         return None
 
-
-    def __XYZ_Limits(self):
-        xlim = len(self.__pollutionPoints)
-        ylim = len(self.__pollutionPoints[0])
-        zlim = len(self.__pollutionPoints[0][0])
-        return xlim, ylim, zlim
-
-
-    def __DeletePollutionPointNotInViewRange(self, view_range):
-        xlim, ylim, zlim = self.__XYZ_Limits()
-
-        new_x = []
-        new_y = []
-        new_z = []
-        new_pollutions = []
-
-        for x_count in range(xlim):
-            for y_count in range(ylim):
-                for z_count in range(zlim):
-                    if(self.__pollutionPoints[x_count][y_count][z_count] > view_range):
-                        new_x.append(x_count)
-                        new_y.append(y_count)
-                        new_z.append(z_count)
-                        new_pollutions.append(self.__pollutionPoints[x_count][y_count][z_count])
-
-
-        return new_x, new_y, new_z, new_pollutions
 
 
 
@@ -124,29 +92,6 @@ class Pollution:
             datas.to_csv(savePath)
 
 
-    def __to_list(self):
-
-        xlim, ylim, zlim = self.__XYZ_Limits()
-
-        new_x = []
-        new_y = []
-        new_z = []
-        new_pollutions = []
-
-        for x_count in range(xlim):
-            for y_count in range(ylim):
-                for z_count in range(zlim):
-                    new_x.append(x_count)
-                    new_y.append(y_count)
-                    new_z.append(z_count)
-                    new_pollutions.append(self.__pollutionPoints[x_count][y_count][z_count])
-
-        return new_x, new_y, new_z, new_pollutions
-
-    def Print(self):
-        print(self.__pollutionPoints)
-
-
 
     def StraightLine(self, point_start, point_last):
 
@@ -174,6 +119,41 @@ class Pollution:
 
 
 
+
+
+
+
+
+
+
+
+
+######################  プライベートメソッド ##################################################333
+
+    def __to_list(self):
+
+        xlim, ylim, zlim = self.__XYZ_Limits()
+
+        new_x = []
+        new_y = []
+        new_z = []
+        new_pollutions = []
+
+        for x_i in range(xlim):
+            for y_i in range(ylim):
+                for z_i in range(zlim):
+                    new_x.append(x_i)
+                    new_y.append(y_i)
+                    new_z.append(z_i)
+                    new_pollutions.append(self.GetPollution(x_i, y_i, z_i))
+
+        return new_x, new_y, new_z, new_pollutions
+
+
+
+
+
+
     def __AppendXYZ_AndPollution(self, point_start, distance, degree_xy, degree_z):
         point_next = point_start.PolarPoint(distance, degree_xy, degree_z)
         x, y, z = point_next.GetXYZ()
@@ -183,11 +163,47 @@ class Pollution:
         return [x, y, z, pollution]
 
 
+    def __AddOnePointPollution(self, x, y, z, pollution):
+        if(pollution.__IsInRange(x, y, z)):
+            self.__pollutionPoints[x][y][z] += pollution.GetPollution(x, y, z)
 
-        return self.PollutionStraightLine(straight)
+    def __IsInRange(self, x, y, z):
+        xlim, ylim, zlim = self.__XYZ_Limits()
+        isInRange = (x >= 0 and x < xlim and y >= 0 and y < ylim and z >= 0 and z < zlim)
+        return isInRange
+
+    def __XYZ_Limits(self):
+        xlim = len(self.__pollutionPoints)
+        ylim = len(self.__pollutionPoints[0])
+        zlim = len(self.__pollutionPoints[0][0])
+        return xlim, ylim, zlim
 
 
-    class PollutionStraightLine():
+    def __DeletePollutionPointNotInViewRange(self, view_range):
+        xlim, ylim, zlim = self.__XYZ_Limits()
+
+        new_x = []
+        new_y = []
+        new_z = []
+        new_pollutions = []
+
+        for x_i in range(xlim):
+            for y_i in range(ylim):
+                for z_i in range(zlim):
+                    if(self.__pollutionPoints[x_i][y_i][z_i] > view_range):
+                        new_x.append(x_i)
+                        new_y.append(y_i)
+                        new_z.append(z_i)
+                        new_pollutions.append(self.__pollutionPoints[x_i][y_i][z_i])
+
+
+        return new_x, new_y, new_z, new_pollutions
+
+
+
+
+########################### クラス内クラス（Pollutionクラス外からは使えない) ######################################
+    class PollutionStraightLine:
 
         def __init__(self, pointAndPollutions):
             self.__pointAndPollutions = pointAndPollutions
@@ -198,7 +214,7 @@ class Pollution:
 
 
         def Next(self):
-            #TODO　呼び出しのたびにカウンタを初期化しよう
+
             if(self.__counter > len(self.__pointAndPollutions)):
                 self.__counter = 0
                 return []
