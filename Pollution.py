@@ -157,6 +157,7 @@ class Pollution:
         #Pollutionが有するのは、濃度値座標は離散値という知識
         #Pointから離散座標を返すようにすると密結合になる
         #Pointは角度計算の知識も持つ
+        #pointクラスに角度計算も距離計算も任せることでだいぶクリアになる
 
         xyz_and_pollutions = list()
 
@@ -188,10 +189,17 @@ class Pollution:
 
         def __init__(self, pointAndPollutions):
             self.__pointAndPollutions = pointAndPollutions
+            self.__counter = 0
 
         def Print(self):
             print(self.__pointAndPollutions)
 
 
         def Next(self):
-            pass
+            #TODO　呼び出しのたびにカウンタを初期化しよう
+            if(self.__counter > len(self.__pointAndPollutions)):
+                self.__counter = 0
+                return []
+
+            self.__counter += 1
+            return self.__pointAndPollutions
