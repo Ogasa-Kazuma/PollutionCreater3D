@@ -9,20 +9,20 @@ import math
 class Pollution:
 
     def __init__(self, pollutionPoints):
-        self.__pollutionPoints = np.array(pollutionPoints)
+        self.__pollutionPoints = pollutionPoints
 
 
     def GetPollution(self, x, y, z):
         return self.__pollutionPoints[x][y][z]
 
     def IsInRange(self, x, y, z):
-        xlim, ylim, zlim = self.__pollutionPoints.shape
+        xlim, ylim, zlim = self.__XYZ_Limits()
         isInRange = (x >= 0 and x < xlim and y >= 0 and y < ylim and z >= 0 and z < zlim)
         return isInRange
 
     def Add(self, pollution):
 
-        xlim, ylim, zlim = self.__pollutionPoints.shape
+        xlim, ylim, zlim = self.__XYZ_Limits()
         for x_i in range(xlim):
             for y_i in range(ylim):
                 for z_i in range(zlim):
@@ -40,7 +40,7 @@ class Pollution:
         ratio = before_max / pollution_max
 
 
-        xlim, ylim, zlim = self.__pollutionPoints.shape
+        xlim, ylim, zlim = self.__XYZ_Limits()
         result = copy.deepcopy(self.__pollutionPoints)
 
         for x_i in range(xlim):
@@ -56,7 +56,6 @@ class Pollution:
     def View(self, display_pollution_range, cmap = 'binaly'):
 
 
-
         xList, yList, zList, pollutionList = self.__DeletePollutionPointNotInViewRange(display_pollution_range)
         #matplotlibという描画ライブラリで散布図を描画
         ax = plt.figure().add_subplot(111, projection = '3d')
@@ -66,7 +65,10 @@ class Pollution:
 
 
     def __XYZ_Limits(self):
-        return self.__pollutionPoints.shape
+        xlim = len(self.__pollutionPoints)
+        ylim = len(self.__pollutionPoints[0])
+        zlim = len(self.__pollutionPoints[0][0])
+        return xlim, ylim, zlim
 
 
     def __DeletePollutionPointNotInViewRange(self, view_range):
