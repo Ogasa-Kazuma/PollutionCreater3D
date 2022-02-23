@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import copy
 from itertools import chain
+import math
 
 class Pollution:
 
@@ -49,10 +50,6 @@ class Pollution:
                     result[x_i][y_i][z_i] = self.__pollutionPoints[x_i][y_i][z_i] / ratio
 
         return Pollution(result)
-
-
-
-
 
 
 
@@ -143,3 +140,27 @@ class Pollution:
                     new_pollutions.append(self.__pollutionPoints[x_count][y_count][z_count])
 
         return new_x, new_y, new_z, new_pollutions
+
+
+
+    def StraightLine(pollutions, point_start, point_last):
+
+        #learn
+        degree_xy, degree_z = point_start.Degrees(point_last)
+        distance = point_start.distance(point_last)
+
+        print("deg_xy" + str(degree_xy))
+        print("deg_z" + str(degree_z))
+        print("distance" + str(distance))
+
+        points_straight_line = list()
+
+        #2点を結ぶ直線状の座標を全て計算
+        for distance_i in range(0, math.floor(distance)):
+            points_straight_line.append(point_start.PolarPoint(distance_i, degree_xy, degree_z))
+        #終点も含める
+        points_straight_line.append(point_start.PolarPoint(distance, degree_xy, degree_z))
+
+
+
+        return Pollution(points_straight_line)

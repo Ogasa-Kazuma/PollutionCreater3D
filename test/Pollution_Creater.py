@@ -57,13 +57,21 @@ def main():
     print(pollutionField.GetPollution(x = 0, y = 0, z = 0))
     print(pollutionField.GetPollution(x = 10, y = 10, z = 10))
 
+    points_straight_line = pollutionField.StraightLine(Point(0, 0, 0), Point(0, 1, 1))
+    print(points_straight_line[0].GetX())
+
+
     #うまく濃度分布がつくられてない、と思っても表示の問題だったりするので
     #表示パラメータを調整してみてください
-    pollutionField.View(display_lower_limit = 10)
+    #pollutionField.View(display_pollution_range = 10)
 
     #csvファイルよりpklファイルの方が保存時の実行速度が早くなる
     #多くの汚染源を作成するときは大きな時間の差が出る
-    pollutionField.Save("PollutionLog/unko.csv", format = 'csv')
+    #pollutionField.Save("PollutionLog/unko.csv", format = 'csv')
+
+
+
+
 
 
 if __name__ == "__main__":
