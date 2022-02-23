@@ -35,7 +35,7 @@ class Pollution:
     def AdjustValueRange(self, pollution_max):
         #before_maxが0なら例外を投げる
         before_max = max(chain(*(chain(*self.__pollutionPoints))))
-        
+
         ratio = before_max / pollution_max
 
 
@@ -59,34 +59,46 @@ class Pollution:
     def View(self, display_pollution_range, cmap = 'binaly'):
 
 
-        pollutions_converted_to_array = np.array(self.__pollutionPoints)
-        x_element_count, y_element_count, z_element_count = pollutions_converted_to_array.shape
+
+        xList, yList, zList, pollutionList = self.__DeletePollutionPointNotInViewRange(display_pollution_range)
+        #matplotlibという描画ライブラリで散布図を描画
+        ax = plt.figure().add_subplot(111, projection = '3d')
+        ax.scatter(xList, yList, zList, c = pollutionList, cmap = 'binary', alpha = 0.3)
+
+        return None
+
+
+    def __XYZ_Limits(self):
+        return self.__pollutionPoints.shape
+
+
+    def __DeletePollutionPointNotInViewRange(self, view_range):
+        xlim, ylim, zlim = self.__XYZ_Limits()
 
         new_x = []
         new_y = []
         new_z = []
         new_pollutions = []
-        for x_count in range(x_element_count):
-            for y_count in range(y_element_count):
-                for z_count in range(z_element_count):
-                    if(self.__pollutionPoints[x_count][y_count][z_count] > 10):
+
+        for x_count in range(xlim):
+            for y_count in range(ylim):
+                for z_count in range(zlim):
+                    if(self.__pollutionPoints[x_count][y_count][z_count] > view_range):
                         new_x.append(x_count)
                         new_y.append(y_count)
                         new_z.append(z_count)
                         new_pollutions.append(self.__pollutionPoints[x_count][y_count][z_count])
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection = '3d')
-        ax.scatter(xList, yList, zList, c = pollutionList, cmap = 'binary', alpha = 0.3)
+
+        return new_x, new_y, new_z, new_pollutions
 
 
-        return None
 
 
     def Save(self, savePath, format):
         """データの保存を行う関数"""
 
-        x, y, z, pollution = self.to_list()
+        x, y, z, pollution = self.__to_list()
 
         indexNames = ['x', 'y', 'z', 'pollution']
         values = [x, y, z, pollution]
@@ -111,3 +123,23 @@ class Pollution:
 
         if(format == 'csv'):
             datas.to_csv(savePath)
+
+
+    def __to_list(self):
+
+        xlim, ylim, zlim = self.__XYZ_Limits()
+
+        new_x = []
+        new_y = []
+        new_z = []
+        new_pollutions = []
+
+        for x_count in range(xlim):
+            for y_count in range(ylim):
+                for z_count in range(zlim):
+                    new_x.append(x_count)
+                    new_y.append(y_count)
+                    new_z.append(z_count)
+                    new_pollutions.append(self.__pollutionPoints[x_count][y_count][z_count])
+
+        return new_x, new_y, new_z, new_pollutions
