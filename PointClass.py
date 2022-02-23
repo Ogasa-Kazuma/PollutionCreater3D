@@ -19,6 +19,11 @@ class Point:
     def GetZ(self):
         return self.__z
 
+    #３つの座標を取得する処理は何度も繰り返されると考えられる
+    #呼び出しの順番やy = zとするなど対応のミスを防ぐ。ここに書くことで
+    def GetXYZ(self):
+        return self.__x, self.__y, self.__z
+
 
     def distance(self, point):
         if(not type(point) == Point):
@@ -54,8 +59,9 @@ class Point:
 
 
     def PolarPoint(self, distance, degree_xy, degree_z):
-        x = self.GetX() + distance * math.cos(degree_xy)
-        y = self.GetY() + distance * math.sin(degree_xy)
-        z = self.GetZ() + distance * math.sin(degree_z)
+        x = self.GetX() + distance * math.cos(math.radians(degree_xy))
+        print(x)
+        y = self.GetY() + distance * math.sin(math.radians(degree_xy))
+        z = self.GetZ() + distance * math.sin(math.radians(degree_z))
 
         return Point(x, y, z)

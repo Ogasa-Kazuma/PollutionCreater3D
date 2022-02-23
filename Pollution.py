@@ -141,26 +141,57 @@ class Pollution:
 
         return new_x, new_y, new_z, new_pollutions
 
+    def Print(self):
+        print(self.__pollutionPoints)
 
 
-    def StraightLine(pollutions, point_start, point_last):
+
+    def StraightLine(self, point_start, point_last):
 
         #learn
         degree_xy, degree_z = point_start.Degrees(point_last)
         distance = point_start.distance(point_last)
 
-        print("deg_xy" + str(degree_xy))
-        print("deg_z" + str(degree_z))
-        print("distance" + str(distance))
+        #どちらをPollutionの知識とするか, Pointクラスの知識とするか
+        #Pointが有するのは二点間の距離の直線距離の求め方
+        #Pollutionが有するのは、濃度値座標は離散値という知識
+        #Pointから離散座標を返すようにすると密結合になる
+        #Pointは角度計算の知識も持つ
 
-        points_straight_line = list()
+        xyz_and_pollutions = list()
 
-        #2点を結ぶ直線状の座標を全て計算
         for distance_i in range(0, math.floor(distance)):
-            points_straight_line.append(point_start.PolarPoint(distance_i, degree_xy, degree_z))
+            xyz_and_pollutions.append(self.__AppendXYZ_AndPollution(point_start, distance_i, degree_xy, degree_z))
+
         #終点も含める
-        points_straight_line.append(point_start.PolarPoint(distance, degree_xy, degree_z))
+        xyz_and_pollutions.append(self.__AppendXYZ_AndPollution(point_start, distance, degree_xy, degree_z))
+
+
+        return self.PollutionStraightLine(xyz_and_pollutions)
 
 
 
-        return Pollution(points_straight_line)
+    def __AppendXYZ_AndPollution(self, point_start, distance, degree_xy, degree_z):
+        point_next = point_start.PolarPoint(distance, degree_xy, degree_z)
+        x, y, z = point_next.GetXYZ()
+        x, y, z = round(x), round(y), round(z)
+        pollution = self.GetPollution(x, y, z)
+
+        return [x, y, z, pollution]
+
+
+
+        return self.PollutionStraightLine(straight)
+
+
+    class PollutionStraightLine():
+
+        def __init__(self, pointAndPollutions):
+            self.__pointAndPollutions = pointAndPollutions
+
+        def Print(self):
+            print(self.__pointAndPollutions)
+
+
+        def Next(self):
+            pass

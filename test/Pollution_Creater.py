@@ -35,6 +35,20 @@ def AddSphericalPollutionsToField(pollutionCreater, pollutionField):
 ###################################################################
 
 
+def PrintStraightLinePoint(points_straight_line):
+
+    for point_i in range(len(points_straight_line)):
+
+        points = list()
+
+        x = points_straight_line[point_i].GetX()
+        y = points_straight_line[point_i].GetY()
+        z = points_straight_line[point_i].GetZ()
+
+        points.append([x, y, z])
+        print(points)
+
+
 ####################### main ##########################################
 def main():
 
@@ -57,8 +71,11 @@ def main():
     print(pollutionField.GetPollution(x = 0, y = 0, z = 0))
     print(pollutionField.GetPollution(x = 10, y = 10, z = 10))
 
-    points_straight_line = pollutionField.StraightLine(Point(0, 0, 0), Point(0, 1, 1))
-    print(points_straight_line[0].GetX())
+    pollutionField.Print()
+    straight_line = pollutionField.StraightLine(Point(0, 0, 0), Point(5, 5, 5))
+    #超便利
+    straight_line.Print()
+
 
 
     #うまく濃度分布がつくられてない、と思っても表示の問題だったりするので
