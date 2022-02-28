@@ -1,3 +1,8 @@
+#読み込み順のエラー
+#表示下限濃度値の変数名
+#PollutionCreaterをSphericalPollutionCreaterに変更
+#このファイルをmain.pyにする
+#Data_Saver消す
 #########################################################################
 import os, sys
 sys.path.append(os.pardir)
@@ -39,18 +44,14 @@ def AddSphericalPollutionsToField(pollutionCreater, pollutionField):
 ###################################################################
 
 
-def PrintStraightLinePoint(points_straight_line):
-##### Pollutionクラス内に表示メソッドがない場合、こうなる!
-    for point_i in range(len(points_straight_line)):
+def CreateGraphObject():
+    fig = plt.figure()
+    graph_object = fig.add_subplot(111, projection = '3d')
+    graph_object.set_xlabel('x [m]')
+    graph_object.set_ylabel('y [m]')
+    graph_object.set_zlabel('z [m]')
+    return graph_object
 
-        points = list()
-
-        x = points_straight_line[point_i].GetX()
-        y = points_straight_line[point_i].GetY()
-        z = points_straight_line[point_i].GetZ()
-
-        points.append([x, y, z])
-        print(points)
 
 
 ####################### main ##########################################
@@ -58,6 +59,7 @@ def main():
 
 
     pollutionCreater = Pollution_Creater.PollutionCreater()
+    #フィールドサイズの設定（プログラムは0から数字を数えるので, この場合、フィールドのx座標は0 - 49メートル、となる
     x_end = 50
     y_end = 50
     z_end = 20
@@ -67,11 +69,10 @@ def main():
     pollutionField = Pollution([[[0 for z in range(z_end)] for y in range(y_end)] for x in range(x_end)])
 
     #フィールド上に球形汚染源を配置
-    #なんでこれはクラスメソッドにしない方がいい気がするんだろう
     AddSphericalPollutionsToField(pollutionCreater, pollutionField)
 
+    #濃度値の値を調整
     #濃度値の下限はゼロ
-    #副作用太郎
     pollutionField = pollutionField.AdjustValueRange(pollution_max = 100)
 
     #一点の濃度値を取得する
@@ -79,42 +80,15 @@ def main():
     print(pollutionField.GetPollution(x = 10, y = 10, z = 10))
 
 
-    straight_line = pollutionField.StraightLine(Point(0, 0, 0), Point(5, 5, 5))
-    #超便利
-    straight_line.Print()
-
-
-    searching_data = Searching_Data.SearchingData("unko")
-    #直線上を探索
-    for x_i, y_i, z_i, p_i in straight_line.Next():
-        print('x' + str(x_i))
-        print('y' + str(y_i))
-        print('z' + str(z_i))
-        print('pollution' + str(p_i))
-        searching_data.Add(x_i, y_i, z_i)
-
-
-    searching_data.Save("Search_Log/unko.csv", 'csv')
-
-
-
-    #プログラムがきれいすぎて怖い
-
-
-
-
-
     #うまく濃度分布がつくられてない、と思っても表示の問題だったりするので
     #表示パラメータを調整してみてください
-    pollutionField.View(display_pollution_range = 10)
+
+    graph_object = CreateGraphObject()
+    pollutionField.View(graph_object, display_pollution_range = 10, alpha = 0.1)
 
     #csvファイルよりpklファイルの方が保存時の実行速度が早くなる
     #多くの汚染源を作成するときは大きな時間の差が出る
-    pollutionField.Save("PollutionLog/unko.csv", format = 'csv')
-
-
-
-
+    pollutionField.Save("PollutionLog/unko2.pkl")
 
 
 if __name__ == "__main__":
