@@ -50,12 +50,12 @@ class Pollution:
 
 
 
-    def View(self, graph_object, display_pollution_range, cmap = 'binary', alpha = 0.3, marker='o', norm=None,
+    def View(self, graph_object, pollution_lower_limit, cmap = 'binary', alpha = 0.3, marker='o', norm=None,
                           vmin=None, vmax=None, linewidths=None,
                           verts=None, edgecolors=None, hold=None, data=None):
 
 
-        xList, yList, zList, pollutionList = self.__DeletePollutionPointNotInViewRange(display_pollution_range)
+        xList, yList, zList, pollutionList = self.__DeletePollutionPointNotInViewRange(pollution_lower_limit)
         #matplotlibという描画ライブラリで散布図を描画
         graph_object.scatter(xList, yList, zList, c = pollutionList, cmap = cmap, alpha = alpha)
 

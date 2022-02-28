@@ -4,6 +4,10 @@
 #このファイルをmain.pyにする
 #Data_Saver消す
 #########################################################################
+
+####################################################################
+#読み込み順を変更しないでください
+
 import os, sys
 sys.path.append(os.pardir)
 import importlib
@@ -26,7 +30,6 @@ from Pollution import Pollution
 
 import Searching_Data
 importlib.reload(Searching_Data)
-
 ###########################################################################
 
 
@@ -45,8 +48,11 @@ def AddSphericalPollutionsToField(pollutionCreater, pollutionField):
 
 
 def CreateGraphObject():
+    #matplotlibという描画ライブラリを使用
+    #matplotlibについて詳しくはWebで
     fig = plt.figure()
-    graph_object = fig.add_subplot(111, projection = '3d')
+    graph_object = fig.add_subplot(111, projection = '3d') #111, は描画サイズの設定.
+    #軸名の設定
     graph_object.set_xlabel('x [m]')
     graph_object.set_ylabel('y [m]')
     graph_object.set_zlabel('z [m]')
@@ -82,9 +88,8 @@ def main():
 
     #うまく濃度分布がつくられてない、と思っても表示の問題だったりするので
     #表示パラメータを調整してみてください
-
     graph_object = CreateGraphObject()
-    pollutionField.View(graph_object, display_pollution_range = 10, alpha = 0.1)
+    pollutionField.View(graph_object, pollution_lower_limit = 10, alpha = 0.1) #alphaは透明度
 
     #csvファイルよりpklファイルの方が保存時の実行速度が早くなる
     #多くの汚染源を作成するときは大きな時間の差が出る
