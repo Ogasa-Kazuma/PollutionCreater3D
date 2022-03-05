@@ -45,24 +45,14 @@ class PollutionCreater:
         return x_range, y_range, z_range, sphericalPollution
 
 
-    def __CalcDistanceFromCenter(self, pollutionPoint, x_range, y_range, z_range):
-
-        centerPoint = Point(x = middle(x_range), y = middle(y_range), z = middle(z_range))
-
-        distance = pollutionPoint.distance(centerPoint)
-
-        return distance
-
-
-
     def __CalcPollutionAtOnePoint(self, distance, diameter, pollution_at_center_point):
         radius = diameter / 2
         pollution_decreasing_per_meter =  pollution_at_center_point / radius
         pollution = pollution_at_center_point - (pollution_decreasing_per_meter * distance)
-        pollution = self.__LimitToZero(pollution)
+        pollution = self.__DeleteMinusPollution(pollution)
         return pollution
 
-    def __LimitToZero(self, pollution):
+    def __DeleteMinusPollution(self, pollution):
         if(pollution < 0):
             return 0
         return pollution
